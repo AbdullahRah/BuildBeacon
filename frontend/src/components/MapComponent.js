@@ -248,42 +248,118 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
       <div className="absolute inset-0 pointer-events-none">
         <svg className="w-full h-full">
           <defs>
-            <pattern id="provincePattern" patternUnits="userSpaceOnUse" width="8" height="8">
-              <rect width="8" height="8" fill="none"/>
-              <circle cx="4" cy="4" r="0.5" fill="#94a3b8" opacity="0.2"/>
+            <pattern id="provincePattern" patternUnits="userSpaceOnUse" width="12" height="12">
+              <rect width="12" height="12" fill="#f1f5f9"/>
+              <circle cx="6" cy="6" r="0.5" fill="#94a3b8" opacity="0.2"/>
+            </pattern>
+            <pattern id="mountainPattern" patternUnits="userSpaceOnUse" width="15" height="15">
+              <rect width="15" height="15" fill="#f8fafc"/>
+              <polygon points="7.5,3 12,12 3,12" fill="#9ca3af" opacity="0.3"/>
             </pattern>
           </defs>
           
-          {/* Alberta boundary approximation */}
+          {/* Alberta province boundary - more accurate shape */}
           <path
-            d="M 20,10 L 80,10 L 80,90 L 20,90 Z"
+            d="M 15,8 L 85,8 L 85,15 Q 87,25 85,35 L 85,75 Q 83,85 80,92 L 15,92 L 15,75 Q 12,50 15,25 Z"
             fill="url(#provincePattern)"
             stroke="#64748b"
-            strokeWidth="1"
-            opacity="0.3"
+            strokeWidth="2"
+            opacity="0.4"
           />
           
-          {/* Calgary marker */}
-          <circle
-            cx="50"
-            cy="70"
-            r="3"
-            fill="#ef4444"
-            stroke="#ffffff"
+          {/* Rocky Mountains (western edge) */}
+          <path
+            d="M 15,20 Q 20,25 18,35 Q 22,45 20,55 Q 25,65 22,75 Q 20,85 18,92"
+            fill="url(#mountainPattern)"
+            stroke="#6b7280"
             strokeWidth="1"
+            opacity="0.5"
           />
-          <text x="55" y="75" fontSize="8" fill="#374151" fontWeight="bold">Calgary</text>
           
-          {/* Edmonton marker */}
+          {/* Major rivers */}
+          <path
+            d="M 30,20 Q 45,30 55,25 Q 70,20 80,30"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+            opacity="0.5"
+          />
+          
+          {/* Edmonton */}
           <circle
             cx="45"
-            cy="45"
-            r="2"
+            cy="35"
+            r="4"
             fill="#6366f1"
+            stroke="#ffffff"
+            strokeWidth="2"
+            opacity="0.8"
+          />
+          <text x="52" y="38" fontSize="8" fill="#374151" fontWeight="bold">Edmonton</text>
+          
+          {/* Calgary - highlighted as main focus */}
+          <circle
+            cx="50"
+            cy="65"
+            r="5"
+            fill="#ef4444"
+            stroke="#ffffff"
+            strokeWidth="2"
+            opacity="0.9"
+          />
+          <circle
+            cx="50"
+            cy="65"
+            r="8"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="1"
+            strokeDasharray="2,2"
+            opacity="0.6"
+          />
+          <text x="58" y="68" fontSize="9" fill="#374151" fontWeight="bold">Calgary</text>
+          
+          {/* Red Deer */}
+          <circle
+            cx="47"
+            cy="50"
+            r="2"
+            fill="#8b5cf6"
             stroke="#ffffff"
             strokeWidth="1"
           />
-          <text x="50" y="50" fontSize="8" fill="#374151">Edmonton</text>
+          <text x="51" y="53" fontSize="7" fill="#374151">Red Deer</text>
+          
+          {/* Fort McMurray */}
+          <circle
+            cx="55"
+            cy="20"
+            r="2"
+            fill="#059669"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+          <text x="59" y="23" fontSize="7" fill="#374141">Ft. McMurray</text>
+          
+          {/* Highway lines */}
+          <path
+            d="M 45,35 Q 48,50 50,65"
+            fill="none"
+            stroke="#6b7280"
+            strokeWidth="1"
+            strokeDasharray="3,3"
+            opacity="0.4"
+          />
+          
+          {/* Alberta label */}
+          <text x="50" y="15" fontSize="12" fill="#374151" fontWeight="bold" textAnchor="middle">Alberta</text>
+          
+          {/* Compass rose */}
+          <g transform="translate(75, 85)">
+            <circle cx="0" cy="0" r="8" fill="#ffffff" stroke="#64748b" strokeWidth="1" opacity="0.8"/>
+            <polygon points="0,-6 2,0 0,6 -2,0" fill="#ef4444"/>
+            <text x="0" y="-10" fontSize="6" fill="#374151" textAnchor="middle" fontWeight="bold">N</text>
+          </g>
         </svg>
       </div>
     );
