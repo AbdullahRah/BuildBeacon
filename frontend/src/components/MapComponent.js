@@ -170,32 +170,72 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
     
     return (
       <div className="absolute inset-0 pointer-events-none">
-        {/* Calgary city outline approximation */}
+        {/* Calgary city outline and features */}
         <svg className="w-full h-full">
           <defs>
-            <pattern id="cityPattern" patternUnits="userSpaceOnUse" width="4" height="4">
-              <rect width="4" height="4" fill="none"/>
-              <circle cx="2" cy="2" r="0.5" fill="#94a3b8" opacity="0.3"/>
+            <pattern id="cityPattern" patternUnits="userSpaceOnUse" width="6" height="6">
+              <rect width="6" height="6" fill="#f8fafc"/>
+              <circle cx="3" cy="3" r="0.5" fill="#cbd5e1" opacity="0.4"/>
+            </pattern>
+            <pattern id="riverPattern" patternUnits="userSpaceOnUse" width="8" height="8">
+              <rect width="8" height="8" fill="#dbeafe"/>
+              <path d="M0,4 Q4,2 8,4 Q4,6 0,4" fill="#93c5fd" opacity="0.6"/>
             </pattern>
           </defs>
           
-          {/* Calgary boundary approximation */}
+          {/* Calgary city boundary - more accurate shape */}
           <path
-            d="M 15,20 Q 25,15 35,20 L 85,25 Q 90,40 85,55 L 80,80 Q 70,85 60,80 L 20,75 Q 10,60 15,40 Z"
+            d="M 20,25 Q 30,20 45,25 L 75,30 Q 85,35 85,50 L 82,70 Q 75,85 65,85 L 35,82 Q 20,75 18,60 L 20,40 Z"
             fill="url(#cityPattern)"
             stroke="#64748b"
-            strokeWidth="1"
-            opacity="0.4"
+            strokeWidth="2"
+            opacity="0.5"
           />
           
-          {/* Bow River approximation */}
+          {/* Bow River - more detailed path */}
           <path
-            d="M 20,45 Q 35,40 50,45 Q 65,50 80,45"
+            d="M 15,55 Q 25,50 35,52 Q 45,54 55,50 Q 65,46 75,50 Q 80,52 85,48"
+            fill="none"
+            stroke="#2563eb"
+            strokeWidth="3"
+            opacity="0.7"
+          />
+          
+          {/* Elbow River */}
+          <path
+            d="M 45,65 Q 50,60 52,52 Q 54,45 58,40"
             fill="none"
             stroke="#3b82f6"
             strokeWidth="2"
             opacity="0.6"
           />
+          
+          {/* Downtown core */}
+          <rect
+            x="48"
+            y="48"
+            width="8"
+            height="6"
+            fill="#475569"
+            opacity="0.4"
+            rx="1"
+          />
+          
+          {/* Major neighborhoods */}
+          <circle cx="40" cy="40" r="3" fill="#f59e0b" opacity="0.3" />
+          <text x="42" y="42" fontSize="6" fill="#92400e" fontWeight="bold">NW</text>
+          
+          <circle cx="65" cy="40" r="3" fill="#f59e0b" opacity="0.3" />
+          <text x="67" y="42" fontSize="6" fill="#92400e" fontWeight="bold">NE</text>
+          
+          <circle cx="40" cy="65" r="3" fill="#f59e0b" opacity="0.3" />
+          <text x="42" y="67" fontSize="6" fill="#92400e" fontWeight="bold">SW</text>
+          
+          <circle cx="65" cy="65" r="3" fill="#f59e0b" opacity="0.3" />
+          <text x="67" y="67" fontSize="6" fill="#92400e" fontWeight="bold">SE</text>
+          
+          {/* Calgary label */}
+          <text x="52" y="20" fontSize="10" fill="#374151" fontWeight="bold" textAnchor="middle">Calgary</text>
         </svg>
       </div>
     );
