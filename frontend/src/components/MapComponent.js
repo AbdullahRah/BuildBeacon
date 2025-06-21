@@ -576,25 +576,33 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
         {/* Zoom Controls */}
         <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-white/20 overflow-hidden">
           <button
-            onClick={() => setZoom(Math.min(zoom + 1, 18))}
-            className="p-3 hover:bg-slate-50 transition-colors border-b border-slate-200"
-            title="Zoom In"
+            onClick={() => {
+              const newZoom = Math.min(zoom + 2, 20);
+              setZoom(newZoom);
+              console.log(`Zoom in: ${zoom} -> ${newZoom}`);
+            }}
+            className="p-3 hover:bg-orange-50 transition-colors border-b border-slate-200 group"
+            title={`Zoom In (Current: ${zoom}x)`}
           >
-            <ZoomIn className="h-4 w-4 text-slate-600" />
+            <ZoomIn className="h-4 w-4 text-slate-600 group-hover:text-orange-600" />
           </button>
           <button
-            onClick={() => setZoom(Math.max(zoom - 1, 1))}
-            className="p-3 hover:bg-slate-50 transition-colors border-b border-slate-200"
-            title="Zoom Out"
+            onClick={() => {
+              const newZoom = Math.max(zoom - 2, 1);
+              setZoom(newZoom);
+              console.log(`Zoom out: ${zoom} -> ${newZoom}`);
+            }}
+            className="p-3 hover:bg-orange-50 transition-colors border-b border-slate-200 group"
+            title={`Zoom Out (Current: ${zoom}x)`}
           >
-            <ZoomOut className="h-4 w-4 text-slate-600" />
+            <ZoomOut className="h-4 w-4 text-slate-600 group-hover:text-orange-600" />
           </button>
           <button
             onClick={fitMapToPermits}
-            className="p-3 hover:bg-slate-50 transition-colors"
+            className="p-3 hover:bg-orange-50 transition-colors group"
             title="Fit to Permits"
           >
-            <RotateCcw className="h-4 w-4 text-slate-600" />
+            <RotateCcw className="h-4 w-4 text-slate-600 group-hover:text-orange-600" />
           </button>
         </div>
 
