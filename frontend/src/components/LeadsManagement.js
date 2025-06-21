@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLeads } from '../context/LeadsContext';
-import { Star, MessageSquare, Download, Search, Calendar, DollarSign, MapPin } from 'lucide-react';
+import { Star, MessageSquare, Download, Search, Calendar, DollarSign, MapPin, Zap } from 'lucide-react';
 
 const LeadsManagement = () => {
   const { savedLeads, contactedLeads, exportLeads, removeFromSavedLeads, removeFromContactedLeads } = useLeads();
@@ -32,7 +32,7 @@ const LeadsManagement = () => {
   };
 
   const LeadCard = ({ lead, type, onRemove }) => (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-slate-300">
+    <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-orange-200 hover:scale-105">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
@@ -43,10 +43,16 @@ const LeadsManagement = () => {
         </div>
         <div className="flex items-center space-x-2">
           {type === 'saved' && (
-            <Star className="h-4 w-4 text-yellow-500 fill-current" />
+            <div className="relative">
+              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+              <div className="absolute inset-0 bg-yellow-400 rounded-full blur opacity-25"></div>
+            </div>
           )}
           {type === 'contacted' && (
-            <MessageSquare className="h-4 w-4 text-green-500" />
+            <div className="relative">
+              <MessageSquare className="h-4 w-4 text-green-500" />
+              <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-25"></div>
+            </div>
           )}
         </div>
       </div>
@@ -108,7 +114,7 @@ const LeadsManagement = () => {
             const leadData = [{ ...lead, exportedAt: new Date().toISOString() }];
             exportLeads(leadData, `lead-${lead.permitnum}`);
           }}
-          className="flex-1 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+          className="flex-1 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 rounded-lg hover:from-orange-200 hover:to-red-200 transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-1"
         >
           <Download className="h-3 w-3" />
           <span>Export</span>
@@ -123,8 +129,18 @@ const LeadsManagement = () => {
     if (filteredLeads.length === 0) {
       return (
         <div className="text-center py-12">
-          <div className="mx-auto h-12 w-12 text-slate-400 mb-4">
-            {type === 'saved' ? <Star className="h-12 w-12" /> : <MessageSquare className="h-12 w-12" />}
+          <div className="mx-auto h-12 w-12 text-slate-400 mb-4 relative">
+            {type === 'saved' ? (
+              <div className="relative">
+                <Star className="h-12 w-12" />
+                <div className="absolute inset-0 bg-yellow-400 rounded-full blur opacity-25"></div>
+              </div>
+            ) : (
+              <div className="relative">
+                <MessageSquare className="h-12 w-12" />
+                <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-25"></div>
+              </div>
+            )}
           </div>
           <h3 className="text-lg font-medium text-slate-800 mb-2">
             No {type} leads yet
@@ -158,9 +174,17 @@ const LeadsManagement = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            Lead Management
-          </h1>
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-75"></div>
+              <div className="relative bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              BuildBeacon Lead Management
+            </h1>
+          </div>
           <p className="text-slate-600">
             Manage your saved permits and track your outreach efforts
           </p>
@@ -168,27 +192,33 @@ const LeadsManagement = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-slate-200">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <Star className="h-8 w-8 text-yellow-500 mr-3" />
+              <div className="p-3 bg-yellow-100 rounded-lg mr-3">
+                <Star className="h-8 w-8 text-yellow-500" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">{savedLeads.length}</p>
                 <p className="text-sm text-slate-600">Saved Leads</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <MessageSquare className="h-8 w-8 text-green-500 mr-3" />
+              <div className="p-3 bg-green-100 rounded-lg mr-3">
+                <MessageSquare className="h-8 w-8 text-green-500" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">{contactedLeads.length}</p>
                 <p className="text-sm text-slate-600">Contacted</p>
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-blue-500 mr-3" />
+              <div className="p-3 bg-blue-100 rounded-lg mr-3">
+                <DollarSign className="h-8 w-8 text-blue-500" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">
                   {formatCurrency([...savedLeads, ...contactedLeads].reduce((sum, lead) => 
@@ -198,11 +228,13 @@ const LeadsManagement = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-200">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <Calendar className="h-8 w-8 text-purple-500 mr-3" />
+              <div className="p-3 bg-gradient-to-r from-orange-100 to-red-100 rounded-lg mr-3">
+                <Calendar className="h-8 w-8 text-orange-500" />
+              </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800">
+                <p className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                   {Math.round((contactedLeads.length / Math.max(savedLeads.length, 1)) * 100)}%
                 </p>
                 <p className="text-sm text-slate-600">Contact Rate</p>
@@ -217,9 +249,9 @@ const LeadsManagement = () => {
           <div className="flex space-x-1 bg-slate-200 p-1 rounded-lg">
             <button
               onClick={() => setActiveTab('saved')}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md font-medium transition-all duration-300 ${
                 activeTab === 'saved'
-                  ? 'bg-white text-slate-800 shadow-sm'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25'
                   : 'text-slate-600 hover:text-slate-800'
               }`}
             >
@@ -227,9 +259,9 @@ const LeadsManagement = () => {
             </button>
             <button
               onClick={() => setActiveTab('contacted')}
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md font-medium transition-all duration-300 ${
                 activeTab === 'contacted'
-                  ? 'bg-white text-slate-800 shadow-sm'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/25'
                   : 'text-slate-600 hover:text-slate-800'
               }`}
             >
@@ -246,15 +278,15 @@ const LeadsManagement = () => {
                 placeholder="Search leads..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
             <button
               onClick={() => {
                 const leads = activeTab === 'saved' ? savedLeads : contactedLeads;
-                exportLeads(leads, `${activeTab}-leads`);
+                exportLeads(leads, `buildbeacon-${activeTab}-leads`);
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:from-orange-700 hover:to-red-700 transition-all duration-300 flex items-center space-x-2 shadow-lg shadow-orange-500/25"
             >
               <Download className="h-4 w-4" />
               <span>Export All</span>
@@ -263,7 +295,7 @@ const LeadsManagement = () => {
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
           {activeTab === 'saved' 
             ? renderLeadsList(savedLeads, 'saved')
             : renderLeadsList(contactedLeads, 'contacted')

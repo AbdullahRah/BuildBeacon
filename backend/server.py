@@ -21,7 +21,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app
-app = FastAPI(title="ContractorLeads API", description="Calgary Building Permits API for Contractors")
+app = FastAPI(title="BuildBeacon API", description="Calgary Building Permits API for Contractors")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -194,7 +194,7 @@ def apply_filters(permits: List[dict], filters: PermitFilter) -> List[dict]:
 # API Routes
 @api_router.get("/")
 async def root():
-    return {"message": "ContractorLeads API - Calgary Building Permits"}
+    return {"message": "BuildBeacon API - Calgary Building Permits Intelligence"}
 
 @api_router.get("/permits")
 async def get_permits(
@@ -237,7 +237,8 @@ async def get_permits(
             "filtered_count": len(filtered_permits),
             "limit": limit,
             "offset": offset,
-            "cache_updated": permits_cache["last_updated"].isoformat() if permits_cache["last_updated"] else None
+            "cache_updated": permits_cache["last_updated"].isoformat() if permits_cache["last_updated"] else None,
+            "api_source": "BuildBeacon - Calgary Building Permits"
         }
         
     except Exception as e:
@@ -264,7 +265,7 @@ async def get_permit_by_number(permit_number: str):
 
 @api_router.get("/analytics/communities")
 async def get_community_analytics():
-    """Get analytics data for communities"""
+    """Get analytics data for Calgary communities"""
     try:
         permits = await get_cached_permits()
         
@@ -305,7 +306,11 @@ async def get_community_analytics():
         # Sort by total value
         result.sort(key=lambda x: x["total_value"], reverse=True)
         
-        return {"communities": result[:20]}  # Top 20 communities
+        return {
+            "communities": result[:25],  # Top 25 communities
+            "total_communities": len(result),
+            "data_source": "BuildBeacon Analytics"
+        }
         
     except Exception as e:
         logging.error(f"Error in get_community_analytics: {e}")
@@ -350,7 +355,11 @@ async def get_contractor_analytics():
         # Sort by total value
         result.sort(key=lambda x: x["total_value"], reverse=True)
         
-        return {"contractors": result[:20]}  # Top 20 contractors
+        return {
+            "contractors": result[:25],  # Top 25 contractors
+            "total_contractors": len(result),
+            "data_source": "BuildBeacon Analytics"
+        }
         
     except Exception as e:
         logging.error(f"Error in get_contractor_analytics: {e}")
@@ -365,9 +374,10 @@ async def refresh_cache():
         permits_cache["last_updated"] = datetime.utcnow()
         
         return {
-            "message": "Cache refreshed successfully",
+            "message": "BuildBeacon cache refreshed successfully",
             "permits_count": len(permits_data),
-            "updated_at": permits_cache["last_updated"].isoformat()
+            "updated_at": permits_cache["last_updated"].isoformat(),
+            "source": "Calgary Open Data API"
         }
         
     except Exception as e:
@@ -376,7 +386,7 @@ async def refresh_cache():
 
 @api_router.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint for BuildBeacon"""
     try:
         # Test Calgary API connectivity
         async with httpx.AsyncClient(timeout=10.0) as client:
@@ -386,12 +396,53 @@ async def health_check():
         calgary_api_status = "down"
     
     return {
+        "service": "BuildBeacon API",
         "status": "healthy",
         "calgary_api": calgary_api_status,
         "cache_status": "loaded" if permits_cache["data"] else "empty",
         "cache_updated": permits_cache["last_updated"].isoformat() if permits_cache["last_updated"] else None,
+        "permits_cached": len(permits_cache["data"]) if permits_cache["data"] else 0,
         "timestamp": datetime.utcnow().isoformat()
     }
+
+@api_router.get("/stats/summary")
+async def get_summary_stats():
+    """Get summary statistics for BuildBeacon dashboard"""
+    try:
+        permits = await get_cached_permits()
+        
+        total_permits = len(permits)
+        total_value = sum(float(p.get("estprojectcost", 0) or 0) for p in permits)
+        active_permits = len([p for p in permits if p.get("statuscurrent") in ["Pre Backfill Phase", "Issued Permit"]])
+        unique_communities = len(set(p.get("communityname", "Unknown") for p in permits))
+        unique_contractors = len(set(p.get("contractorname") for p in permits if p.get("contractorname")))
+        
+        # Recent permits (last 30 days)
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        recent_permits = 0
+        for permit in permits:
+            if permit.get("applieddate"):
+                try:
+                    applied_date = datetime.fromisoformat(permit["applieddate"].replace('T', ' ').replace('.000', ''))
+                    if applied_date >= thirty_days_ago:
+                        recent_permits += 1
+                except:
+                    continue
+        
+        return {
+            "total_permits": total_permits,
+            "total_value": total_value,
+            "active_permits": active_permits,
+            "recent_permits": recent_permits,
+            "unique_communities": unique_communities,
+            "unique_contractors": unique_contractors,
+            "avg_project_value": total_value / total_permits if total_permits > 0 else 0,
+            "cache_updated": permits_cache["last_updated"].isoformat() if permits_cache["last_updated"] else None
+        }
+        
+    except Exception as e:
+        logging.error(f"Error in get_summary_stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Legacy routes for compatibility
 @api_router.post("/status", response_model=StatusCheck)
@@ -427,15 +478,16 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize the application"""
-    logger.info("Starting ContractorLeads API")
+    """Initialize BuildBeacon API"""
+    logger.info("Starting BuildBeacon API - Calgary Building Permits Intelligence")
     # Pre-load permits cache on startup
     try:
         await get_cached_permits()
-        logger.info("Successfully pre-loaded permits cache")
+        logger.info("Successfully pre-loaded BuildBeacon permits cache")
     except Exception as e:
-        logger.error(f"Failed to pre-load permits cache: {e}")
+        logger.error(f"Failed to pre-load BuildBeacon permits cache: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+    logger.info("BuildBeacon API shutdown complete")
