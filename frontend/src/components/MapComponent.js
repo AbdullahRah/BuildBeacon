@@ -290,6 +290,10 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
               <rect width="15" height="15" fill="#f8fafc"/>
               <polygon points="7.5,3 12,12 3,12" fill="#9ca3af" opacity="0.3"/>
             </pattern>
+            <pattern id="prairiePattern" patternUnits="userSpaceOnUse" width="10" height="10">
+              <rect width="10" height="10" fill="#fefbeb"/>
+              <path d="M0,5 Q5,3 10,5" stroke="#fbbf24" strokeWidth="0.5" opacity="0.3"/>
+            </pattern>
           </defs>
           
           {/* Alberta province boundary - more accurate shape */}
@@ -309,6 +313,11 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="1"
             opacity="0.5"
           />
+          <text x="12" y="50" fontSize="7" fill="#6b7280" fontWeight="bold" transform="rotate(-90, 12, 50)">Rocky Mountains</text>
+          
+          {/* Prairies */}
+          <rect x="25%" y="30%" width="60%" height="50%" fill="url(#prairiePattern)" opacity="0.3"/>
+          <text x="55" y="60" fontSize="8" fill="#92400e" textAnchor="middle">Alberta Prairies</text>
           
           {/* Major rivers */}
           <path
@@ -318,6 +327,16 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="2"
             opacity="0.5"
           />
+          <text x="55" y="23" fontSize="6" fill="#2563eb" textAnchor="middle">North Saskatchewan River</text>
+          
+          <path
+            d="M 35,65 Q 50,70 65,65 Q 75,60 82,65"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+            opacity="0.5"
+          />
+          <text x="58" y="68" fontSize="6" fill="#2563eb" textAnchor="middle">South Saskatchewan River</text>
           
           {/* Edmonton */}
           <circle
@@ -329,7 +348,9 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="2"
             opacity="0.8"
           />
-          <text x="52" y="38" fontSize="8" fill="#374151" fontWeight="bold">Edmonton</text>
+          <text x="45" y="32" fontSize="9" fill="#374151" fontWeight="bold" textAnchor="middle">Edmonton</text>
+          <text x="45" y="43" fontSize="6" fill="#4f46e5" textAnchor="middle">Provincial Capital</text>
+          <text x="45" y="49" fontSize="5" fill="#6b7280" textAnchor="middle">Pop: 1.4M</text>
           
           {/* Calgary - highlighted as main focus */}
           <circle
@@ -350,8 +371,11 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="1"
             strokeDasharray="2,2"
             opacity="0.6"
+            className="animate-pulse"
           />
-          <text x="58" y="68" fontSize="9" fill="#374151" fontWeight="bold">Calgary</text>
+          <text x="50" y="61" fontSize="10" fill="#374151" fontWeight="bold" textAnchor="middle">Calgary</text>
+          <text x="50" y="74" fontSize="6" fill="#dc2626" textAnchor="middle">Economic Center</text>
+          <text x="50" y="80" fontSize="5" fill="#6b7280" textAnchor="middle">Pop: 1.6M • {permits.length} Permits</text>
           
           {/* Red Deer */}
           <circle
@@ -362,7 +386,8 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             stroke="#ffffff"
             strokeWidth="1"
           />
-          <text x="51" y="53" fontSize="7" fill="#374151">Red Deer</text>
+          <text x="47" y="47" fontSize="7" fill="#374151" fontWeight="bold" textAnchor="middle">Red Deer</text>
+          <text x="47" y="55" fontSize="5" fill="#7c3aed" textAnchor="middle">Central Alberta</text>
           
           {/* Fort McMurray */}
           <circle
@@ -373,7 +398,32 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             stroke="#ffffff"
             strokeWidth="1"
           />
-          <text x="59" y="23" fontSize="7" fill="#374141">Ft. McMurray</text>
+          <text x="55" y="17" fontSize="7" fill="#374151" fontWeight="bold" textAnchor="middle">Fort McMurray</text>
+          <text x="55" y="25" fontSize="5" fill="#059669" textAnchor="middle">Oil Sands</text>
+          
+          {/* Lethbridge */}
+          <circle
+            cx="48"
+            cy="78"
+            r="2"
+            fill="#f59e0b"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+          <text x="48" y="75" fontSize="6" fill="#374151" fontWeight="bold" textAnchor="middle">Lethbridge</text>
+          <text x="48" y="83" fontSize="5" fill="#d97706" textAnchor="middle">Agriculture Hub</text>
+          
+          {/* Grande Prairie */}
+          <circle
+            cx="35"
+            cy="25"
+            r="2"
+            fill="#06b6d4"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+          <text x="35" y="22" fontSize="6" fill="#374151" fontWeight="bold" textAnchor="middle">Grande Prairie</text>
+          <text x="35" y="30" fontSize="5" fill="#0891b2" textAnchor="middle">Peace Country</text>
           
           {/* Highway lines */}
           <path
@@ -384,16 +434,33 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeDasharray="3,3"
             opacity="0.4"
           />
+          <text x="46" y="52" fontSize="5" fill="#6b7280">Hwy 2</text>
+          
+          <path
+            d="M 35,65 Q 42,65 50,65 Q 58,65 65,65"
+            fill="none"
+            stroke="#6b7280"
+            strokeWidth="1"
+            strokeDasharray="3,3"
+            opacity="0.4"
+          />
+          <text x="50" y="62" fontSize="5" fill="#6b7280">Trans-Canada Hwy</text>
           
           {/* Alberta label */}
-          <text x="50" y="15" fontSize="12" fill="#374151" fontWeight="bold" textAnchor="middle">Alberta</text>
+          <text x="50" y="15" fontSize="16" fill="#374151" fontWeight="bold" textAnchor="middle">Alberta</text>
+          <text x="50" y="95" fontSize="7" fill="#6b7280" textAnchor="middle">Zoom: {zoom}x • Canada's Energy Province</text>
           
           {/* Compass rose */}
           <g transform="translate(75, 85)">
-            <circle cx="0" cy="0" r="8" fill="#ffffff" stroke="#64748b" strokeWidth="1" opacity="0.8"/>
+            <circle cx="0" cy="0" r="8" fill="#ffffff" stroke="#64748b" strokeWidth="1" opacity="0.9"/>
             <polygon points="0,-6 2,0 0,6 -2,0" fill="#ef4444"/>
             <text x="0" y="-10" fontSize="6" fill="#374151" textAnchor="middle" fontWeight="bold">N</text>
+            <text x="0" y="16" fontSize="4" fill="#6b7280" textAnchor="middle">BuildBeacon</text>
           </g>
+          
+          {/* Provincial facts */}
+          <text x="15" y="12" fontSize="6" fill="#6b7280">Area: 661,848 km²</text>
+          <text x="15" y="18" fontSize="6" fill="#6b7280">Population: 4.6M</text>
         </svg>
       </div>
     );
