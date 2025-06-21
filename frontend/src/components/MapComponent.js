@@ -504,41 +504,42 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg border border-slate-200 p-4 z-30">
+      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/20 p-4 z-30">
         <h3 className="text-sm font-medium text-slate-800 mb-3 flex items-center">
           <MapPin className="h-4 w-4 text-orange-600 mr-1" />
-          Permit Status
+          BuildBeacon Legend
         </h3>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-xs text-slate-600">Active/Issued</span>
+            <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-slate-600">Active/Issued ({permits.filter(p => ['Pre Backfill Phase', 'Issued Permit'].includes(p.statuscurrent)).length})</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <span className="text-xs text-slate-600">Under Review</span>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-slate-600">Under Review ({permits.filter(p => p.statuscurrent === 'Pending Plans Review').length})</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-xs text-slate-600">Completed</span>
+            <div className="w-3 h-3 bg-blue-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-slate-600">Completed ({permits.filter(p => p.statuscurrent === 'Completed').length})</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span className="text-xs text-slate-600">Cancelled</span>
+            <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-slate-600">Cancelled ({permits.filter(p => p.statuscurrent === 'Cancelled').length})</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-            <span className="text-xs text-slate-600">On Hold</span>
+            <div className="w-3 h-3 bg-purple-500 rounded-full shadow-sm"></div>
+            <span className="text-xs text-slate-600">On Hold ({permits.filter(p => p.statuscurrent === 'Hold').length})</span>
           </div>
         </div>
         <div className="mt-3 pt-3 border-t border-slate-200">
           <p className="text-xs text-slate-500">Pin size = Project value</p>
-          <p className="text-xs text-slate-500">
-            Showing {permits.length} permits
+          <p className="text-xs font-medium text-slate-700">
+            {permits.length} permits • {viewMode === 'calgary' ? 'Calgary' : 'Alberta'} view
           </p>
-          <p className="text-xs font-medium text-orange-600">
-            View: {viewMode === 'calgary' ? 'Calgary' : 'Alberta'}
-          </p>
+          <div className="flex items-center space-x-2 mt-1">
+            <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+            <span className="text-xs text-orange-600 font-medium">Real-time data</span>
+          </div>
         </div>
       </div>
 
