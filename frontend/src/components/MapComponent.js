@@ -368,16 +368,37 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
   return (
     <div className="relative h-full bg-slate-100 overflow-hidden">
       {/* Map Container */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300">
-        {/* Simulated Map Grid */}
-        <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 via-blue-50 to-slate-200">
+        {/* Background terrain */}
+        <div className="absolute inset-0">
           <svg width="100%" height="100%" className="absolute inset-0">
             <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#94a3b8" strokeWidth="1"/>
+              <pattern id="terrainGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#cbd5e1" strokeWidth="0.5" opacity="0.3"/>
               </pattern>
+              <radialGradient id="cityGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.1"/>
+                <stop offset="100%" stopColor="#fbbf24" stopOpacity="0"/>
+              </radialGradient>
             </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
+            <rect width="100%" height="100%" fill="url(#terrainGrid)" />
+            
+            {/* Terrain features based on view */}
+            {viewMode === 'alberta' && (
+              <>
+                {/* Rocky Mountains representation */}
+                <rect x="0%" y="0%" width="20%" height="100%" fill="url(#mountainPattern)" opacity="0.3"/>
+                {/* Prairies */}
+                <rect x="20%" y="0%" width="80%" height="100%" fill="#fef3c7" opacity="0.2"/>
+              </>
+            )}
+            
+            {viewMode === 'calgary' && (
+              <>
+                {/* City glow effect */}
+                <circle cx="50%" cy="50%" r="30%" fill="url(#cityGlow)"/>
+              </>
+            )}
           </svg>
         </div>
 
