@@ -525,9 +525,9 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
               </div>
             )}
             
-            {/* View mode indicator */}
-            <div className="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20 shadow-lg">
-              <div className="flex items-center space-x-2">
+            {/* View mode indicator with zoom level */}
+            <div className="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/20 shadow-lg">
+              <div className="flex items-center space-x-2 mb-2">
                 {viewMode === 'calgary' ? (
                   <Building className="h-4 w-4 text-orange-600" />
                 ) : (
@@ -536,6 +536,13 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
                 <span className="text-sm font-medium text-slate-700">
                   {viewMode === 'calgary' ? 'Calgary View' : 'Alberta View'}
                 </span>
+              </div>
+              <div className="text-xs text-slate-500 space-y-1">
+                <div>Zoom: {zoom}x</div>
+                <div>Center: {mapCenter.lat.toFixed(3)}, {mapCenter.lng.toFixed(3)}</div>
+                {permits.length > 0 && (
+                  <div className="text-orange-600 font-medium">{permits.length} permits visible</div>
+                )}
               </div>
             </div>
             
