@@ -550,10 +550,19 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
       {/* No Permits Message */}
       {permits.length === 0 && !loading && (
         <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="bg-white p-8 rounded-lg shadow-lg border border-slate-200 text-center">
-            <MapPin className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <div className="bg-white/95 backdrop-blur-sm p-8 rounded-xl shadow-xl border border-white/20 text-center max-w-md">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-orange-400 rounded-full blur opacity-25"></div>
+              <MapPin className="relative h-12 w-12 text-orange-600 mx-auto" />
+            </div>
             <h3 className="text-lg font-medium text-slate-800 mb-2">No Permits Found</h3>
-            <p className="text-slate-600">Try adjusting your filters to see more results</p>
+            <p className="text-slate-600 mb-4">
+              Try adjusting your filters to see more results in {viewMode === 'calgary' ? 'Calgary' : 'Alberta'}
+            </p>
+            <div className="flex items-center justify-center space-x-2 text-sm text-slate-500">
+              <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+              <span>BuildBeacon • Real-time data</span>
+            </div>
           </div>
         </div>
       )}
