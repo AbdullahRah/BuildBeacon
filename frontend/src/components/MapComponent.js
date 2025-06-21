@@ -408,16 +408,35 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
 
         {/* Map Area with Permit Pins */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-full max-w-6xl max-h-4xl">
+          <div className="relative w-full h-full">
             {/* Loading overlay */}
             {loading && (
-              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-40">
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-40 rounded-lg">
                 <div className="text-center">
-                  <Loader className="h-8 w-8 text-orange-600 animate-spin mx-auto mb-2" />
-                  <p className="text-sm text-slate-600">Updating map...</p>
+                  <div className="relative mb-3">
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur opacity-75 animate-pulse"></div>
+                    <Loader className="relative h-8 w-8 text-orange-600 animate-spin mx-auto" />
+                  </div>
+                  <p className="text-sm text-slate-700 font-medium">
+                    Updating {viewMode === 'calgary' ? 'Calgary' : 'Alberta'} map...
+                  </p>
                 </div>
               </div>
             )}
+            
+            {/* View mode indicator */}
+            <div className="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/20 shadow-lg">
+              <div className="flex items-center space-x-2">
+                {viewMode === 'calgary' ? (
+                  <Building className="h-4 w-4 text-orange-600" />
+                ) : (
+                  <Globe className="h-4 w-4 text-blue-600" />
+                )}
+                <span className="text-sm font-medium text-slate-700">
+                  {viewMode === 'calgary' ? 'Calgary View' : 'Alberta View'}
+                </span>
+              </div>
+            </div>
             
             {/* Render Permit Pins */}
             {renderPermitPins()}
