@@ -1,10 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLeads } from '../context/LeadsContext';
-import { BarChart3, TrendingUp, MapPin, Building, DollarSign, Users, Calendar, Target } from 'lucide-react';
+import { BarChart3, TrendingUp, MapPin, Building, DollarSign, Users, Calendar, Target, Loader, AlertCircle } from 'lucide-react';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const Analytics = () => {
   const { permits, savedLeads, contactedLeads } = useLeads();
   const [timeRange, setTimeRange] = useState('90days');
+  const [communityData, setCommunityData] = useState([]);
+  const [contractorData, setContractorData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch analytics data from backend
+  useEffect(() => {
+    const fetchAnalyticsData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [communityResponse, contractorResponse] = await Promise.all([
+          fetch(`${API}/analytics/communities`),
+          fetch(`${API}/analytics/contractors`)
+        ]);
+
+        if (!communityResponse.ok || !contractorResponse.ok) {
+          throw new Error('Failed to fetch analytics data');
+        }
+
+        const communityResult = await communityResponse.json();
+        const contractorResult = await contractorResponse.json();
+
+        setCommunityData(communityResult.communities || []);
+        setContractorData(contractorResult.contractors || []);
+
+      } catch (err) {
+        console.error('Error fetching analytics:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalyticsData();
+  }, [timeRange]);
 
   const getFilteredPermits = () => {
     if (timeRange === 'all') return permits;
@@ -17,76 +57,6 @@ const Analytics = () => {
       const appliedDate = new Date(permit.applieddate);
       return appliedDate >= cutoffDate;
     });
-  };
-
-  const calculateCommunityStats = () => {
-    const filteredPermits = getFilteredPermits();
-    const communityStats = {};
-    
-    filteredPermits.forEach(permit => {
-      const community = permit.communityname;
-      if (!communityStats[community]) {
-        communityStats[community] = {
-          count: 0,
-          totalValue: 0,
-          avgValue: 0,
-          newProjects: 0,
-          contractors: new Set()
-        };
-      }
-      
-      communityStats[community].count++;
-      communityStats[community].totalValue += parseFloat(permit.estprojectcost) || 0;
-      if (permit.workclass === 'New') {
-        communityStats[community].newProjects++;
-      }
-      if (permit.contractorname) {
-        communityStats[community].contractors.add(permit.contractorname);
-      }
-    });
-    
-    Object.keys(communityStats).forEach(community => {
-      communityStats[community].avgValue = communityStats[community].totalValue / communityStats[community].count;
-      communityStats[community].contractors = communityStats[community].contractors.size;
-    });
-    
-    return Object.entries(communityStats)
-      .map(([name, stats]) => ({ name, ...stats }))
-      .sort((a, b) => b.totalValue - a.totalValue)
-      .slice(0, 10);
-  };
-
-  const calculateContractorStats = () => {
-    const filteredPermits = getFilteredPermits();
-    const contractorStats = {};
-    
-    filteredPermits.forEach(permit => {
-      if (!permit.contractorname) return;
-      
-      const contractor = permit.contractorname;
-      if (!contractorStats[contractor]) {
-        contractorStats[contractor] = {
-          count: 0,
-          totalValue: 0,
-          avgValue: 0,
-          communities: new Set()
-        };
-      }
-      
-      contractorStats[contractor].count++;
-      contractorStats[contractor].totalValue += parseFloat(permit.estprojectcost) || 0;
-      contractorStats[contractor].communities.add(permit.communityname);
-    });
-    
-    Object.keys(contractorStats).forEach(contractor => {
-      contractorStats[contractor].avgValue = contractorStats[contractor].totalValue / contractorStats[contractor].count;
-      contractorStats[contractor].communities = contractorStats[contractor].communities.size;
-    });
-    
-    return Object.entries(contractorStats)
-      .map(([name, stats]) => ({ name, ...stats }))
-      .sort((a, b) => b.totalValue - a.totalValue)
-      .slice(0, 10);
   };
 
   const calculateProjectTypeStats = () => {
@@ -116,13 +86,41 @@ const Analytics = () => {
     return `$${amount.toLocaleString()}`;
   };
 
-  const communityStats = calculateCommunityStats();
-  const contractorStats = calculateContractorStats();
   const projectTypeStats = calculateProjectTypeStats();
   const filteredPermits = getFilteredPermits();
 
   const totalValue = filteredPermits.reduce((sum, p) => sum + (parseFloat(p.estprojectcost) || 0), 0);
   const avgProjectValue = totalValue / filteredPermits.length || 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-slate-800 mb-2">Loading Analytics</h2>
+          <p className="text-slate-600">Calculating insights from Calgary building permits...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-slate-800 mb-2">Analytics Error</h2>
+          <p className="text-slate-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -134,7 +132,7 @@ const Analytics = () => {
               Business Intelligence
             </h1>
             <p className="text-slate-600">
-              Insights and trends from Calgary building permits
+              Real-time insights from Calgary building permits
             </p>
           </div>
           
@@ -157,7 +155,7 @@ const Analytics = () => {
             <div className="flex items-center">
               <Building className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <p className="text-2xl font-bold text-slate-800">{filteredPermits.length}</p>
+                <p className="text-2xl font-bold text-slate-800">{filteredPermits.length.toLocaleString()}</p>
                 <p className="text-sm text-slate-600">Total Permits</p>
               </div>
             </div>
@@ -204,8 +202,8 @@ const Analytics = () => {
               <h2 className="text-xl font-semibold text-slate-800">Top Communities by Value</h2>
             </div>
             <div className="space-y-4">
-              {communityStats.map((community, index) => (
-                <div key={community.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              {communityData.slice(0, 10).map((community, index) => (
+                <div key={community.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-slate-800 bg-slate-200 px-2 py-1 rounded">
@@ -220,17 +218,17 @@ const Analytics = () => {
                       </div>
                       <div>
                         <span className="text-xs text-slate-500">Avg Value:</span>
-                        <p className="font-medium">{formatCurrency(community.avgValue)}</p>
+                        <p className="font-medium">{formatCurrency(community.avg_value)}</p>
                       </div>
                       <div>
                         <span className="text-xs text-slate-500">Contractors:</span>
-                        <p className="font-medium">{community.contractors}</p>
+                        <p className="font-medium">{community.unique_contractors}</p>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-green-600">
-                      {formatCurrency(community.totalValue)}
+                      {formatCurrency(community.total_value)}
                     </p>
                   </div>
                 </div>
@@ -245,14 +243,16 @@ const Analytics = () => {
               <h2 className="text-xl font-semibold text-slate-800">Most Active Contractors</h2>
             </div>
             <div className="space-y-4">
-              {contractorStats.map((contractor, index) => (
-                <div key={contractor.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+              {contractorData.slice(0, 10).map((contractor, index) => (
+                <div key={contractor.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-slate-800 bg-slate-200 px-2 py-1 rounded">
                         #{index + 1}
                       </span>
-                      <h3 className="font-medium text-slate-800 truncate">{contractor.name}</h3>
+                      <h3 className="font-medium text-slate-800 truncate" title={contractor.name}>
+                        {contractor.name.length > 30 ? `${contractor.name.substring(0, 30)}...` : contractor.name}
+                      </h3>
                     </div>
                     <div className="grid grid-cols-3 gap-4 mt-2 text-sm text-slate-600">
                       <div>
@@ -261,17 +261,17 @@ const Analytics = () => {
                       </div>
                       <div>
                         <span className="text-xs text-slate-500">Avg Value:</span>
-                        <p className="font-medium">{formatCurrency(contractor.avgValue)}</p>
+                        <p className="font-medium">{formatCurrency(contractor.avg_value)}</p>
                       </div>
                       <div>
                         <span className="text-xs text-slate-500">Areas:</span>
-                        <p className="font-medium">{contractor.communities}</p>
+                        <p className="font-medium">{contractor.unique_communities}</p>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-blue-600">
-                      {formatCurrency(contractor.totalValue)}
+                      {formatCurrency(contractor.total_value)}
                     </p>
                   </div>
                 </div>
@@ -281,14 +281,14 @@ const Analytics = () => {
         </div>
 
         {/* Project Types */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 mb-8">
           <div className="flex items-center mb-6">
             <BarChart3 className="h-6 w-6 text-purple-600 mr-2" />
             <h2 className="text-xl font-semibold text-slate-800">Project Types Distribution</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projectTypeStats.map((type, index) => (
-              <div key={type.name} className="p-4 bg-slate-50 rounded-lg">
+              <div key={type.name} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                 <h3 className="font-medium text-slate-800 mb-2">{type.name}</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -319,7 +319,7 @@ const Analytics = () => {
         </div>
 
         {/* Lead Performance */}
-        <div className="mt-8 bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6">
           <div className="flex items-center mb-6">
             <Target className="h-6 w-6 text-orange-600 mr-2" />
             <h2 className="text-xl font-semibold text-slate-800">Lead Performance</h2>
