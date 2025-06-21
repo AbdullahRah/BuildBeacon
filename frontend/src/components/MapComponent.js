@@ -216,6 +216,7 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="3"
             opacity="0.7"
           />
+          <text x="42" y="47" fontSize="7" fill="#1e40af" fontWeight="bold">Bow River</text>
           
           {/* Elbow River */}
           <path
@@ -225,6 +226,7 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             strokeWidth="2"
             opacity="0.6"
           />
+          <text x="55" y="62" fontSize="6" fill="#2563eb">Elbow River</text>
           
           {/* Downtown core */}
           <rect
@@ -233,25 +235,41 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
             width="8"
             height="6"
             fill="#475569"
-            opacity="0.4"
+            opacity="0.6"
             rx="1"
           />
+          <text x="52" y="52" fontSize="6" fill="#ffffff" fontWeight="bold" textAnchor="middle">Downtown</text>
           
-          {/* Major neighborhoods */}
-          <circle cx="40" cy="40" r="3" fill="#f59e0b" opacity="0.3" />
-          <text x="42" y="42" fontSize="6" fill="#92400e" fontWeight="bold">NW</text>
+          {/* Major neighborhoods with better labels */}
+          <circle cx="35" cy="35" r="4" fill="#f59e0b" opacity="0.3" stroke="#d97706" strokeWidth="1" />
+          <text x="35" y="30" fontSize="8" fill="#92400e" fontWeight="bold" textAnchor="middle">Northwest</text>
+          <text x="35" y="42" fontSize="6" fill="#92400e" textAnchor="middle">Kensington, Hillhurst</text>
           
-          <circle cx="65" cy="40" r="3" fill="#f59e0b" opacity="0.3" />
-          <text x="67" y="42" fontSize="6" fill="#92400e" fontWeight="bold">NE</text>
+          <circle cx="68" cy="35" r="4" fill="#f59e0b" opacity="0.3" stroke="#d97706" strokeWidth="1" />
+          <text x="68" y="30" fontSize="8" fill="#92400e" fontWeight="bold" textAnchor="middle">Northeast</text>
+          <text x="68" y="42" fontSize="6" fill="#92400e" textAnchor="middle">Airport, Redstone</text>
           
-          <circle cx="40" cy="65" r="3" fill="#f59e0b" opacity="0.3" />
-          <text x="42" y="67" fontSize="6" fill="#92400e" fontWeight="bold">SW</text>
+          <circle cx="35" cy="70" r="4" fill="#f59e0b" opacity="0.3" stroke="#d97706" strokeWidth="1" />
+          <text x="35" y="65" fontSize="8" fill="#92400e" fontWeight="bold" textAnchor="middle">Southwest</text>
+          <text x="35" y="77" fontSize="6" fill="#92400e" textAnchor="middle">Marda Loop, Altadore</text>
           
-          <circle cx="65" cy="65" r="3" fill="#f59e0b" opacity="0.3" />
-          <text x="67" y="67" fontSize="6" fill="#92400e" fontWeight="bold">SE</text>
+          <circle cx="68" cy="70" r="4" fill="#f59e0b" opacity="0.3" stroke="#d97706" strokeWidth="1" />
+          <text x="68" y="65" fontSize="8" fill="#92400e" fontWeight="bold" textAnchor="middle">Southeast</text>
+          <text x="68" y="77" fontSize="6" fill="#92400e" textAnchor="middle">Inglewood, Seton</text>
+          
+          {/* Major landmarks */}
+          <circle cx="50" cy="46" r="2" fill="#dc2626" opacity="0.8" />
+          <text x="50" y="43" fontSize="6" fill="#dc2626" fontWeight="bold" textAnchor="middle">Calgary Tower</text>
+          
+          <circle cx="47" cy="58" r="2" fill="#16a34a" opacity="0.8" />
+          <text x="47" y="63" fontSize="6" fill="#16a34a" textAnchor="middle">Stampede Grounds</text>
+          
+          <circle cx="60" cy="45" r="2" fill="#7c3aed" opacity="0.8" />
+          <text x="65" y="45" fontSize="6" fill="#7c3aed">YYC Airport</text>
           
           {/* Calgary label */}
-          <text x="52" y="20" fontSize="10" fill="#374151" fontWeight="bold" textAnchor="middle">Calgary</text>
+          <text x="52" y="18" fontSize="14" fill="#374151" fontWeight="bold" textAnchor="middle">Calgary</text>
+          <text x="52" y="92" fontSize="8" fill="#6b7280" textAnchor="middle">Zoom: {zoom}x • {permits.length} Building Permits</text>
         </svg>
       </div>
     );
