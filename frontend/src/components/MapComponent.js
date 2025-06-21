@@ -101,13 +101,14 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
   const convertCoordinatesToScreen = (lat, lng) => {
     const bounds = viewMode === 'alberta' ? albertaBounds : calgaryBounds;
     
-    // Normalize coordinates to 0-1 range
+    // Normalize coordinates to 0-1 range with proper scaling
     const normalizedLat = (lat - bounds.south) / (bounds.north - bounds.south);
     const normalizedLng = (lng - bounds.west) / (bounds.east - bounds.west);
     
-    // Convert to screen percentage (0-100%)
-    const x = normalizedLng * 100;
-    const y = (1 - normalizedLat) * 100; // Flip Y because screen coordinates are inverted
+    // Convert to screen percentage (0-100%) with padding
+    const padding = 5; // 5% padding on each side
+    const x = padding + (normalizedLng * (100 - 2 * padding));
+    const y = padding + ((1 - normalizedLat) * (100 - 2 * padding)); // Flip Y because screen coordinates are inverted
     
     return { x, y };
   };
