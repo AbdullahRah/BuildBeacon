@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Layers, ZoomIn, ZoomOut, RotateCcw, Loader } from 'lucide-react';
+import { MapPin, Layers, ZoomIn, ZoomOut, RotateCcw, Loader, Globe, Building } from 'lucide-react';
 
 const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
   const [mapCenter, setMapCenter] = useState({ lat: 51.0447, lng: -114.0719 }); // Calgary center
   const [zoom, setZoom] = useState(11);
   const [mapStyle, setMapStyle] = useState('default');
+  const [viewMode, setViewMode] = useState('calgary'); // 'calgary' or 'alberta'
+
+  // Calgary bounds
+  const calgaryBounds = {
+    north: 51.18,
+    south: 50.84,
+    east: -113.85,
+    west: -114.27
+  };
+
+  // Alberta bounds
+  const albertaBounds = {
+    north: 60.0,
+    south: 49.0,
+    east: -110.0,
+    west: -120.0
+  };
 
   // Calculate bounds for all permits
   const getMapBounds = () => {
@@ -31,7 +48,20 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
         lng: (bounds.east + bounds.west) / 2 
       });
       setZoom(10);
+      setViewMode('calgary');
     }
+  };
+
+  const switchToAlbertaView = () => {
+    setMapCenter({ lat: 54.5, lng: -115.0 }); // Alberta center
+    setZoom(6);
+    setViewMode('alberta');
+  };
+
+  const switchToCalgaryView = () => {
+    setMapCenter({ lat: 51.0447, lng: -114.0719 }); // Calgary center
+    setZoom(11);
+    setViewMode('calgary');
   };
 
   const getPermitColor = (permit) => {
@@ -68,6 +98,20 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
     }).format(amount || 0);
   };
 
+  const convertCoordinatesToScreen = (lat, lng) => {
+    const bounds = viewMode === 'alberta' ? albertaBounds : calgaryBounds;
+    
+    // Normalize coordinates to 0-1 range
+    const normalizedLat = (lat - bounds.south) / (bounds.north - bounds.south);
+    const normalizedLng = (lng - bounds.west) / (bounds.east - bounds.west);
+    
+    // Convert to screen percentage (0-100%)
+    const x = normalizedLng * 100;
+    const y = (1 - normalizedLat) * 100; // Flip Y because screen coordinates are inverted
+    
+    return { x, y };
+  };
+
   const renderPermitPins = () => {
     return permits.map((permit, index) => {
       const lat = parseFloat(permit.latitude);
@@ -76,10 +120,8 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
       // Skip permits without valid coordinates
       if (isNaN(lat) || isNaN(lng)) return null;
       
-      // Convert lat/lng to screen coordinates (simplified for Calgary area)
-      // This is a rough approximation - in a real app you'd use a proper map library
-      const x = ((lng + 114.5) / 0.8) * 100;
-      const y = 100 - ((lat - 50.8) / 0.5) * 100;
+      // Convert lat/lng to screen coordinates
+      const { x, y } = convertCoordinatesToScreen(lat, lng);
       
       // Skip pins that would be outside our view
       if (x < 0 || x > 100 || y < 0 || y > 100) return null;
@@ -122,6 +164,90 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
     }).filter(Boolean); // Remove null entries
   };
 
+  const renderCalgaryOutline = () => {
+    if (viewMode !== 'calgary') return null;
+    
+    return (
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Calgary city outline approximation */}
+        <svg className="w-full h-full">
+          <defs>
+            <pattern id="cityPattern" patternUnits="userSpaceOnUse" width="4" height="4">
+              <rect width="4" height="4" fill="none"/>
+              <circle cx="2" cy="2" r="0.5" fill="#94a3b8" opacity="0.3"/>
+            </pattern>
+          </defs>
+          
+          {/* Calgary boundary approximation */}
+          <path
+            d="M 15,20 Q 25,15 35,20 L 85,25 Q 90,40 85,55 L 80,80 Q 70,85 60,80 L 20,75 Q 10,60 15,40 Z"
+            fill="url(#cityPattern)"
+            stroke="#64748b"
+            strokeWidth="1"
+            opacity="0.4"
+          />
+          
+          {/* Bow River approximation */}
+          <path
+            d="M 20,45 Q 35,40 50,45 Q 65,50 80,45"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="2"
+            opacity="0.6"
+          />
+        </svg>
+      </div>
+    );
+  };
+
+  const renderAlbertaOutline = () => {
+    if (viewMode !== 'alberta') return null;
+    
+    return (
+      <div className="absolute inset-0 pointer-events-none">
+        <svg className="w-full h-full">
+          <defs>
+            <pattern id="provincePattern" patternUnits="userSpaceOnUse" width="8" height="8">
+              <rect width="8" height="8" fill="none"/>
+              <circle cx="4" cy="4" r="0.5" fill="#94a3b8" opacity="0.2"/>
+            </pattern>
+          </defs>
+          
+          {/* Alberta boundary approximation */}
+          <path
+            d="M 20,10 L 80,10 L 80,90 L 20,90 Z"
+            fill="url(#provincePattern)"
+            stroke="#64748b"
+            strokeWidth="1"
+            opacity="0.3"
+          />
+          
+          {/* Calgary marker */}
+          <circle
+            cx="50"
+            cy="70"
+            r="3"
+            fill="#ef4444"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+          <text x="55" y="75" fontSize="8" fill="#374151" fontWeight="bold">Calgary</text>
+          
+          {/* Edmonton marker */}
+          <circle
+            cx="45"
+            cy="45"
+            r="2"
+            fill="#6366f1"
+            stroke="#ffffff"
+            strokeWidth="1"
+          />
+          <text x="50" y="50" fontSize="8" fill="#374151">Edmonton</text>
+        </svg>
+      </div>
+    );
+  };
+
   return (
     <div className="relative h-full bg-slate-100 overflow-hidden">
       {/* Map Container */}
@@ -138,14 +264,18 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
           </svg>
         </div>
 
-        {/* Calgary Area with Permit Pins */}
+        {/* Geographic Outlines */}
+        {renderCalgaryOutline()}
+        {renderAlbertaOutline()}
+
+        {/* Map Area with Permit Pins */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-full max-w-4xl max-h-3xl">
+          <div className="relative w-full h-full max-w-6xl max-h-4xl">
             {/* Loading overlay */}
             {loading && (
               <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-40">
                 <div className="text-center">
-                  <Loader className="h-8 w-8 text-blue-600 animate-spin mx-auto mb-2" />
+                  <Loader className="h-8 w-8 text-orange-600 animate-spin mx-auto mb-2" />
                   <p className="text-sm text-slate-600">Updating map...</p>
                 </div>
               </div>
@@ -159,6 +289,28 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
 
       {/* Map Controls */}
       <div className="absolute top-4 right-4 flex flex-col space-y-2 z-30">
+        {/* View Mode Toggle */}
+        <div className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
+          <button
+            onClick={switchToCalgaryView}
+            className={`p-3 transition-colors border-b border-slate-200 ${
+              viewMode === 'calgary' ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50'
+            }`}
+            title="Calgary View"
+          >
+            <Building className="h-4 w-4" />
+          </button>
+          <button
+            onClick={switchToAlbertaView}
+            className={`p-3 transition-colors ${
+              viewMode === 'alberta' ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50'
+            }`}
+            title="Alberta View"
+          >
+            <Globe className="h-4 w-4" />
+          </button>
+        </div>
+
         {/* Zoom Controls */}
         <div className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
           <button
@@ -196,7 +348,10 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
 
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg border border-slate-200 p-4 z-30">
-        <h3 className="text-sm font-medium text-slate-800 mb-3">Permit Status</h3>
+        <h3 className="text-sm font-medium text-slate-800 mb-3 flex items-center">
+          <MapPin className="h-4 w-4 text-orange-600 mr-1" />
+          Permit Status
+        </h3>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -223,6 +378,9 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
           <p className="text-xs text-slate-500">Pin size = Project value</p>
           <p className="text-xs text-slate-500">
             Showing {permits.length} permits
+          </p>
+          <p className="text-xs font-medium text-orange-600">
+            View: {viewMode === 'calgary' ? 'Calgary' : 'Alberta'}
           </p>
         </div>
       </div>

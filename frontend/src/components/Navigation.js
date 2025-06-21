@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Building2, Map, Users, BarChart3 } from 'lucide-react';
+import { Building2, Map, Users, BarChart3, Zap } from 'lucide-react';
 
 const Navigation = () => {
   const location = useLocation();
@@ -18,12 +18,14 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <div className="relative group">
-              <Building2 className="h-8 w-8 text-blue-400 transform group-hover:scale-110 transition-all duration-300" />
-              <div className="absolute inset-0 bg-blue-400 rounded-lg blur opacity-25 group-hover:opacity-50 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg">
+                <Zap className="h-6 w-6 text-white transform group-hover:scale-110 transition-all duration-300" />
+              </div>
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                ContractorLeads
+              <h1 className="text-xl font-bold bg-gradient-to-r from-orange-400 via-red-500 to-red-600 bg-clip-text text-transparent">
+                BuildBeacon
               </h1>
               <p className="text-xs text-slate-400 -mt-1">Calgary Building Permits</p>
             </div>
@@ -41,13 +43,13 @@ const Navigation = () => {
                   to={item.path}
                   className={`group relative px-4 py-2 rounded-lg transition-all duration-300 ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                      ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg shadow-orange-600/25'
                       : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
                   <div className="flex items-center space-x-2">
                     <Icon className={`h-5 w-5 transition-all duration-300 ${
-                      isActive ? 'text-white' : 'text-slate-400 group-hover:text-blue-400'
+                      isActive ? 'text-white' : 'text-slate-400 group-hover:text-orange-400'
                     }`} />
                     <div>
                       <div className={`font-medium text-sm ${
@@ -56,7 +58,7 @@ const Navigation = () => {
                         {item.label}
                       </div>
                       <div className={`text-xs ${
-                        isActive ? 'text-blue-200' : 'text-slate-500 group-hover:text-slate-400'
+                        isActive ? 'text-orange-200' : 'text-slate-500 group-hover:text-slate-400'
                       }`}>
                         {item.description}
                       </div>
@@ -65,7 +67,7 @@ const Navigation = () => {
                   
                   {/* Active indicator */}
                   {isActive && (
-                    <div className="absolute inset-0 bg-blue-600 rounded-lg blur opacity-25 -z-10"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 rounded-lg blur opacity-25 -z-10"></div>
                   )}
                 </Link>
               );

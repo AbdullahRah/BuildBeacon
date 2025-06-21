@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLeads } from '../context/LeadsContext';
-import { BarChart3, TrendingUp, MapPin, Building, DollarSign, Users, Calendar, Target, Loader, AlertCircle } from 'lucide-react';
+import { BarChart3, TrendingUp, MapPin, Building, DollarSign, Users, Calendar, Target, Loader, AlertCircle, Zap } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -96,8 +96,11 @@ const Analytics = () => {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-slate-800 mb-2">Loading Analytics</h2>
+          <div className="relative mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur opacity-75 animate-pulse"></div>
+            <Zap className="relative h-12 w-12 text-orange-600 mx-auto animate-bounce" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-800 mb-2">BuildBeacon Analytics</h2>
           <p className="text-slate-600">Calculating insights from Calgary building permits...</p>
         </div>
       </div>
@@ -113,7 +116,7 @@ const Analytics = () => {
           <p className="text-slate-600 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:from-orange-700 hover:to-red-700 transition-all duration-300"
           >
             Try Again
           </button>
@@ -128,9 +131,17 @@ const Analytics = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              Business Intelligence
-            </h1>
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-75"></div>
+                <div className="relative bg-gradient-to-r from-orange-500 to-red-600 p-2 rounded-lg">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                BuildBeacon Analytics
+              </h1>
+            </div>
             <p className="text-slate-600">
               Real-time insights from Calgary building permits
             </p>
@@ -140,7 +151,7 @@ const Analytics = () => {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
           >
             <option value="30days">Last 30 Days</option>
             <option value="90days">Last 90 Days</option>
@@ -151,9 +162,11 @@ const Analytics = () => {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <Building className="h-8 w-8 text-blue-600 mr-3" />
+              <div className="p-3 bg-blue-100 rounded-lg mr-3">
+                <Building className="h-8 w-8 text-blue-600" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">{filteredPermits.length.toLocaleString()}</p>
                 <p className="text-sm text-slate-600">Total Permits</p>
@@ -161,9 +174,11 @@ const Analytics = () => {
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-green-600 mr-3" />
+              <div className="p-3 bg-green-100 rounded-lg mr-3">
+                <DollarSign className="h-8 w-8 text-green-600" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">{formatCurrency(totalValue)}</p>
                 <p className="text-sm text-slate-600">Total Value</p>
@@ -171,9 +186,11 @@ const Analytics = () => {
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-purple-600 mr-3" />
+              <div className="p-3 bg-purple-100 rounded-lg mr-3">
+                <TrendingUp className="h-8 w-8 text-purple-600" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">{formatCurrency(avgProjectValue)}</p>
                 <p className="text-sm text-slate-600">Avg Project Value</p>
@@ -181,9 +198,11 @@ const Analytics = () => {
             </div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center">
-              <Target className="h-8 w-8 text-orange-600 mr-3" />
+              <div className="p-3 bg-orange-100 rounded-lg mr-3">
+                <Target className="h-8 w-8 text-orange-600" />
+              </div>
               <div>
                 <p className="text-2xl font-bold text-slate-800">
                   {Math.round((contactedLeads.length / Math.max(savedLeads.length, 1)) * 100)}%
@@ -196,17 +215,19 @@ const Analytics = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Top Communities */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-center mb-6">
-              <MapPin className="h-6 w-6 text-red-600 mr-2" />
-              <h2 className="text-xl font-semibold text-slate-800">Top Communities by Value</h2>
+              <div className="p-2 bg-red-100 rounded-lg mr-3">
+                <MapPin className="h-6 w-6 text-red-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-slate-800">Top Calgary Communities</h2>
             </div>
             <div className="space-y-4">
               {communityData.slice(0, 10).map((community, index) => (
-                <div key={community.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                <div key={community.name} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg hover:from-orange-50 hover:to-red-50 transition-all duration-300">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-slate-800 bg-slate-200 px-2 py-1 rounded">
+                      <span className="text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-red-500 px-2 py-1 rounded">
                         #{index + 1}
                       </span>
                       <h3 className="font-medium text-slate-800">{community.name}</h3>
@@ -237,17 +258,19 @@ const Analytics = () => {
           </div>
 
           {/* Top Contractors */}
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow">
             <div className="flex items-center mb-6">
-              <Users className="h-6 w-6 text-blue-600 mr-2" />
+              <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
               <h2 className="text-xl font-semibold text-slate-800">Most Active Contractors</h2>
             </div>
             <div className="space-y-4">
               {contractorData.slice(0, 10).map((contractor, index) => (
-                <div key={contractor.name} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                <div key={contractor.name} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg hover:from-blue-50 hover:to-indigo-50 transition-all duration-300">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-slate-800 bg-slate-200 px-2 py-1 rounded">
+                      <span className="text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-500 px-2 py-1 rounded">
                         #{index + 1}
                       </span>
                       <h3 className="font-medium text-slate-800 truncate" title={contractor.name}>
@@ -281,14 +304,16 @@ const Analytics = () => {
         </div>
 
         {/* Project Types */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 mb-8">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 mb-8 hover:shadow-lg transition-shadow">
           <div className="flex items-center mb-6">
-            <BarChart3 className="h-6 w-6 text-purple-600 mr-2" />
+            <div className="p-2 bg-purple-100 rounded-lg mr-3">
+              <BarChart3 className="h-6 w-6 text-purple-600" />
+            </div>
             <h2 className="text-xl font-semibold text-slate-800">Project Types Distribution</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {projectTypeStats.map((type, index) => (
-              <div key={type.name} className="p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+              <div key={type.name} className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg hover:from-purple-50 hover:to-indigo-50 transition-all duration-300 hover:scale-105">
                 <h3 className="font-medium text-slate-800 mb-2">{type.name}</h3>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -305,7 +330,7 @@ const Analytics = () => {
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
                     <div 
-                      className="bg-purple-600 h-2 rounded-full transition-all duration-500"
+                      className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${(type.count / filteredPermits.length) * 100}%` }}
                     ></div>
                   </div>
@@ -319,33 +344,35 @@ const Analytics = () => {
         </div>
 
         {/* Lead Performance */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center mb-6">
-            <Target className="h-6 w-6 text-orange-600 mr-2" />
-            <h2 className="text-xl font-semibold text-slate-800">Lead Performance</h2>
+            <div className="p-2 bg-orange-100 rounded-lg mr-3">
+              <Target className="h-6 w-6 text-orange-600" />
+            </div>
+            <h2 className="text-xl font-semibold text-slate-800">BuildBeacon Lead Performance</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover:scale-105">
               <div className="text-3xl font-bold text-blue-600 mb-2">{savedLeads.length}</div>
-              <div className="text-sm text-slate-600">Saved Leads</div>
+              <div className="text-sm text-slate-600 font-medium">Saved Leads</div>
               <div className="text-xs text-slate-500 mt-1">
                 {formatCurrency(savedLeads.reduce((sum, lead) => sum + (parseFloat(lead.estprojectcost) || 0), 0))} total value
               </div>
             </div>
             
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-300 hover:scale-105">
               <div className="text-3xl font-bold text-green-600 mb-2">{contactedLeads.length}</div>
-              <div className="text-sm text-slate-600">Leads Contacted</div>
+              <div className="text-sm text-slate-600 font-medium">Leads Contacted</div>
               <div className="text-xs text-slate-500 mt-1">
                 {formatCurrency(contactedLeads.reduce((sum, lead) => sum + (parseFloat(lead.estprojectcost) || 0), 0))} total value
               </div>
             </div>
             
-            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-              <div className="text-3xl font-bold text-purple-600 mb-2">
+            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-red-100 rounded-lg hover:from-orange-100 hover:to-red-200 transition-all duration-300 hover:scale-105">
+              <div className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-2">
                 {Math.round((contactedLeads.length / Math.max(savedLeads.length, 1)) * 100)}%
               </div>
-              <div className="text-sm text-slate-600">Conversion Rate</div>
+              <div className="text-sm text-slate-600 font-medium">Conversion Rate</div>
               <div className="text-xs text-slate-500 mt-1">
                 Contacted vs Saved ratio
               </div>
