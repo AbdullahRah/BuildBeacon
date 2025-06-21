@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { mockPermits } from '../data/mockData';
 
 const LeadsContext = createContext();
 
@@ -11,8 +10,13 @@ export const useLeads = () => {
   return context;
 };
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
 export const LeadsProvider = ({ children }) => {
   const [permits, setPermits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [savedLeads, setSavedLeads] = useState([]);
   const [contactedLeads, setContactedLeads] = useState([]);
   const [filters, setFilters] = useState({
@@ -26,11 +30,8 @@ export const LeadsProvider = ({ children }) => {
     contractorType: 'all'
   });
 
+  // Load saved data from localStorage
   useEffect(() => {
-    // Load mock data
-    setPermits(mockPermits);
-    
-    // Load saved data from localStorage
     const savedLeadsData = localStorage.getItem('contractorLeads-savedLeads');
     const contactedLeadsData = localStorage.getItem('contractorLeads-contactedLeads');
     
@@ -40,6 +41,59 @@ export const LeadsProvider = ({ children }) => {
     if (contactedLeadsData) {
       setContactedLeads(JSON.parse(contactedLeadsData));
     }
+  }, []);
+
+  // Fetch permits from backend
+  const fetchPermits = async (forceRefresh = false) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      
+      // Add filters to request
+      if (filters.permitType) params.append('permit_type', filters.permitType);
+      if (filters.status) params.append('status', filters.status);
+      if (filters.minCost) params.append('min_cost', filters.minCost);
+      if (filters.maxCost) params.append('max_cost', filters.maxCost);
+      if (filters.community) params.append('community', filters.community);
+      if (filters.dateRange && filters.dateRange !== 'all') params.append('date_range', filters.dateRange);
+      if (filters.workClass) params.append('work_class', filters.workClass);
+      if (filters.contractorType && filters.contractorType !== 'all') params.append('contractor_type', filters.contractorType);
+      
+      // Set a reasonable limit
+      params.append('limit', '2000');
+
+      const url = `${API}/permits${params.toString() ? `?${params.toString()}` : ''}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      setPermits(data.permits || []);
+      
+      console.log(`Loaded ${data.permits?.length || 0} permits from API`);
+      
+    } catch (err) {
+      console.error('Error fetching permits:', err);
+      setError(err.message);
+      // Fall back to empty array on error
+      setPermits([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch permits when filters change
+  useEffect(() => {
+    fetchPermits();
+  }, [filters]);
+
+  // Initial load
+  useEffect(() => {
+    fetchPermits();
   }, []);
 
   const saveToLocalStorage = (key, data) => {
@@ -79,59 +133,8 @@ export const LeadsProvider = ({ children }) => {
   };
 
   const getFilteredPermits = () => {
-    return permits.filter(permit => {
-      // Filter by permit type
-      if (filters.permitType && !permit.permittype.toLowerCase().includes(filters.permitType.toLowerCase())) {
-        return false;
-      }
-
-      // Filter by status
-      if (filters.status && permit.statuscurrent !== filters.status) {
-        return false;
-      }
-
-      // Filter by cost range
-      const cost = parseFloat(permit.estprojectcost) || 0;
-      if (filters.minCost && cost < parseFloat(filters.minCost)) {
-        return false;
-      }
-      if (filters.maxCost && cost > parseFloat(filters.maxCost)) {
-        return false;
-      }
-
-      // Filter by community
-      if (filters.community && !permit.communityname.toLowerCase().includes(filters.community.toLowerCase())) {
-        return false;
-      }
-
-      // Filter by work class
-      if (filters.workClass && permit.workclass !== filters.workClass) {
-        return false;
-      }
-
-      // Filter by date range
-      if (filters.dateRange !== 'all') {
-        const permitDate = new Date(permit.applieddate);
-        const now = new Date();
-        const daysDiff = (now - permitDate) / (1000 * 60 * 60 * 24);
-
-        switch (filters.dateRange) {
-          case '7days':
-            if (daysDiff > 7) return false;
-            break;
-          case '30days':
-            if (daysDiff > 30) return false;
-            break;
-          case '90days':
-            if (daysDiff > 90) return false;
-            break;
-          default:
-            break;
-        }
-      }
-
-      return true;
-    });
+    // Since filtering is now done on the backend, just return the permits
+    return permits;
   };
 
   const exportLeads = (leadsData, filename) => {
@@ -159,9 +162,15 @@ export const LeadsProvider = ({ children }) => {
     document.body.removeChild(link);
   };
 
+  const refreshData = () => {
+    fetchPermits(true);
+  };
+
   return (
     <LeadsContext.Provider value={{
       permits,
+      loading,
+      error,
       savedLeads,
       contactedLeads,
       filters,
@@ -173,7 +182,8 @@ export const LeadsProvider = ({ children }) => {
       isPermitSaved,
       isPermitContacted,
       getFilteredPermits,
-      exportLeads
+      exportLeads,
+      refreshData
     }}>
       {children}
     </LeadsContext.Provider>

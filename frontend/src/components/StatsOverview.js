@@ -1,7 +1,10 @@
 import React from 'react';
-import { TrendingUp, Building, DollarSign, Users, Calendar, MapPin } from 'lucide-react';
+import { TrendingUp, Building, DollarSign, Users, Calendar, MapPin, RefreshCw } from 'lucide-react';
+import { useLeads } from '../context/LeadsContext';
 
 const StatsOverview = ({ permits }) => {
+  const { loading, error, refreshData } = useLeads();
+
   const calculateStats = () => {
     const totalValue = permits.reduce((sum, permit) => {
       return sum + (parseFloat(permit.estprojectcost) || 0);
@@ -109,36 +112,61 @@ const StatsOverview = ({ permits }) => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      {statCards.map((stat, index) => {
-        const Icon = stat.icon;
-        return (
-          <div 
-            key={index}
-            className={`${stat.bgColor} rounded-xl p-4 border border-${stat.color}-100 hover:shadow-lg transition-all duration-300 hover:scale-105 group`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-slate-600 mb-1">
-                  {stat.title}
-                </p>
-                <p className="text-2xl font-bold text-slate-800 mb-1">
-                  {stat.value}
-                </p>
-                <p className={`text-xs font-medium ${
-                  stat.trend.startsWith('+') ? 'text-green-600' : 
-                  stat.trend === 'Stable' ? 'text-slate-500' : 'text-red-600'
-                }`}>
-                  {stat.trend} vs last month
-                </p>
-              </div>
-              <div className={`${stat.bgColor} p-2 rounded-lg border border-${stat.color}-200 group-hover:scale-110 transition-transform duration-300`}>
-                <Icon className={`h-5 w-5 ${stat.iconColor}`} />
+    <div className="flex items-center justify-between">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 flex-1">
+        {statCards.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div 
+              key={index}
+              className={`${stat.bgColor} rounded-xl p-4 border border-${stat.color}-100 hover:shadow-lg transition-all duration-300 hover:scale-105 group`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    {stat.title}
+                  </p>
+                  <p className="text-2xl font-bold text-slate-800 mb-1">
+                    {loading ? '...' : stat.value}
+                  </p>
+                  <p className={`text-xs font-medium ${
+                    stat.trend.startsWith('+') ? 'text-green-600' : 
+                    stat.trend === 'Stable' ? 'text-slate-500' : 'text-red-600'
+                  }`}>
+                    {stat.trend} vs last month
+                  </p>
+                </div>
+                <div className={`${stat.bgColor} p-2 rounded-lg border border-${stat.color}-200 group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className={`h-5 w-5 ${stat.iconColor}`} />
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+
+      {/* Refresh Button */}
+      <div className="ml-4">
+        <button
+          onClick={refreshData}
+          disabled={loading}
+          className={`p-3 rounded-lg border transition-all duration-300 ${
+            loading 
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+              : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-800 border-slate-200 hover:border-slate-300'
+          }`}
+          title="Refresh data from Calgary API"
+        >
+          <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+        </button>
+      </div>
+
+      {/* Error Indicator */}
+      {error && (
+        <div className="ml-2 px-3 py-2 bg-red-100 text-red-800 rounded-lg text-sm border border-red-200">
+          API Error: {error}
+        </div>
+      )}
     </div>
   );
 };
