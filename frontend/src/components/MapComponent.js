@@ -101,9 +101,25 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
   const convertCoordinatesToScreen = (lat, lng) => {
     const bounds = viewMode === 'alberta' ? albertaBounds : calgaryBounds;
     
+    // Apply zoom factor to bounds
+    const zoomFactor = zoom / 10; // Base zoom level
+    const centerLat = mapCenter.lat;
+    const centerLng = mapCenter.lng;
+    
+    // Calculate zoomed bounds
+    const latRange = (bounds.north - bounds.south) / zoomFactor;
+    const lngRange = (bounds.east - bounds.west) / zoomFactor;
+    
+    const zoomedBounds = {
+      north: centerLat + latRange / 2,
+      south: centerLat - latRange / 2,
+      east: centerLng + lngRange / 2,
+      west: centerLng - lngRange / 2
+    };
+    
     // Normalize coordinates to 0-1 range with proper scaling
-    const normalizedLat = (lat - bounds.south) / (bounds.north - bounds.south);
-    const normalizedLng = (lng - bounds.west) / (bounds.east - bounds.west);
+    const normalizedLat = (lat - zoomedBounds.south) / (zoomedBounds.north - zoomedBounds.south);
+    const normalizedLng = (lng - zoomedBounds.west) / (zoomedBounds.east - zoomedBounds.west);
     
     // Convert to screen percentage (0-100%) with padding
     const padding = 5; // 5% padding on each side
