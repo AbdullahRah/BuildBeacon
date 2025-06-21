@@ -447,11 +447,13 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
       {/* Map Controls */}
       <div className="absolute top-4 right-4 flex flex-col space-y-2 z-30">
         {/* View Mode Toggle */}
-        <div className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-white/20 overflow-hidden">
           <button
             onClick={switchToCalgaryView}
-            className={`p-3 transition-colors border-b border-slate-200 ${
-              viewMode === 'calgary' ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50'
+            className={`p-3 transition-all duration-300 border-b border-slate-200 ${
+              viewMode === 'calgary' 
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg' 
+                : 'hover:bg-orange-50 text-slate-600 hover:text-orange-600'
             }`}
             title="Calgary View"
           >
@@ -459,8 +461,10 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
           </button>
           <button
             onClick={switchToAlbertaView}
-            className={`p-3 transition-colors ${
-              viewMode === 'alberta' ? 'bg-orange-50 text-orange-600' : 'hover:bg-slate-50'
+            className={`p-3 transition-all duration-300 ${
+              viewMode === 'alberta' 
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg' 
+                : 'hover:bg-blue-50 text-slate-600 hover:text-blue-600'
             }`}
             title="Alberta View"
           >
@@ -469,7 +473,7 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
         </div>
 
         {/* Zoom Controls */}
-        <div className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden">
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-white/20 overflow-hidden">
           <button
             onClick={() => setZoom(Math.min(zoom + 1, 18))}
             className="p-3 hover:bg-slate-50 transition-colors border-b border-slate-200"
@@ -496,7 +500,7 @@ const MapComponent = ({ permits, selectedPermit, onPermitSelect, loading }) => {
         {/* Map Style Toggle */}
         <button
           onClick={() => setMapStyle(mapStyle === 'default' ? 'satellite' : 'default')}
-          className="bg-white p-3 rounded-lg shadow-lg border border-slate-200 hover:bg-slate-50 transition-colors"
+          className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border border-white/20 hover:bg-slate-50 transition-colors"
           title="Toggle Map Style"
         >
           <Layers className="h-4 w-4 text-slate-600" />
